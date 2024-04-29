@@ -1,5 +1,39 @@
 USE museo;
 
+-- Punto 6 --
+DROP VIEW IF EXISTS vw_museos_fecha_especifica;
+CREATE VIEW vw_museos_fecha_especifica AS
+	(SELECT DISTINCT mu_id, mu_nombre FROM museo
+    INNER JOIN presentacion ON mu_id = pre_mu_id
+    WHERE pre_fechaincial = 'May-sept-2013');
+SELECT * FROM vw_museos_fecha_especifica;
+
+-- Punto 7 --
+DROP VIEW IF EXISTS vw_museos_ninguna_exposicion;
+CREATE VIEW vw_museos_ninguna_exposicion AS
+	(SELECT mu_id, mu_nombre FROM museo
+    LEFT JOIN presentacion ON mu_id = pre_mu_id
+    WHERE pre_mu_id IS NULL);
+SELECT * FROM vw_museos_ninguna_exposicion;
+
+-- Punto 8 --
+DROP VIEW IF EXISTS vw_obras_presentadas_mas_de_una_vez;
+CREATE VIEW vw_obras_presentadas_mas_de_una_vez AS
+	(SELECT ob_id, ob_nombre FROM obra
+    INNER JOIN presentacion ON ob_id = pre_ob_id
+    GROUP BY pre_ob_id
+    HAVING COUNT(pre_ob_id) > 1);
+SELECT * FROM vw_obras_presentadas_mas_de_una_vez;
+
+-- Punto 9 --
+	DROP VIEW IF EXISTS vw_obras_presentadas_en_mas_de_un_museo;
+	CREATE VIEW vw_obras_presentadas_en_mas_de_un_museo AS
+		(SELECT ob_id, ob_nombre FROM obra
+		INNER JOIN presentacion ON ob_id = pre_ob_id
+		GROUP BY pre_ob_id
+		HAVING COUNT(DISTINCT pre_mu_id) > 1);
+	SELECT * FROM vw_obras_presentadas_en_mas_de_un_museo;
+
 -- Punto 10 --
 DROP VIEW IF EXISTS vw_exposciones_pintura_shangai;
 CREATE VIEW vw_exposciones_pintura_shangai AS 
@@ -12,7 +46,6 @@ SELECT * FROM vw_exposciones_pintura_shangai;
 
 -- Punto 11 --
 SELECT AVG(ob_costo) FROM obra;
-
 
 -- Punto 12 --
 DROP VIEW IF EXISTS vw_museos_al_menos_3_obras_pintura_misma_presentacion;
