@@ -45,7 +45,16 @@ CREATE VIEW vw_exposciones_pintura_shangai AS
 SELECT * FROM vw_exposciones_pintura_shangai;
 
 -- Punto 11 --
-SELECT AVG(ob_costo) FROM obra;
+DROP VIEW IF EXISTS vw_obras_costo_superior_al_promedio_exposicion;
+CREATE VIEW vw_obras_costo_superior_al_promedio_exposicion AS 
+	(SELECT exposicion.ex_id, ex_nombre, ob_id, ob_nombre, ob_tipo, ob_costo FROM exposicion
+	INNER JOIN obra ON ex_id = ob_ex_id
+    INNER JOIN  (SELECT ex_id, AVG(ob_costo) AS 'ex_costo_promedio' FROM exposicion
+		INNER JOIN obra ON ex_id = ob_ex_id
+		GROUP BY ex_id) AS tab1 ON exposicion.ex_id = tab1.ex_id
+        
+	WHERE ob_costo > ex_costo_promedio);
+SELECT * FROM vw_obras_costo_superior_al_promedio_exposicion;
 
 -- Punto 12 --
 DROP VIEW IF EXISTS vw_museos_al_menos_3_obras_pintura_misma_presentacion;
