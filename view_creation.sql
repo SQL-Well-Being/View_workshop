@@ -1,5 +1,46 @@
 USE museo;
 
+-- Punto 1 --
+DROP VIEW IF EXISTS vw_expos_por_museo;
+CREATE VIEW vw_expos_por_museo  AS
+	(SELECT  mu_nombre, GROUP_CONCAT(DISTINCT ex_nombre SEPARATOR ', ') AS 'exposiciones_presentadas' FROM museo
+	INNER JOIN presentacion ON mu_id = pre_mu_id
+    INNER JOIN obra ON pre_ob_id = ob_id
+    INNER JOIN exposicion ON ob_ex_id = ex_id
+    
+    GROUP BY mu_nombre);
+SELECT * FROM vw_expos_por_museo;
+
+-- Punto 2 --
+DROP VIEW IF EXISTS vw_obras_cubismo;
+CREATE VIEW vw_obras_cubismo AS
+	(SELECT ob_id, ob_nombre, ob_tipo, ob_costo FROM obra
+	INNER JOIN exposicion ON ob_ex_id = ex_id
+    WHERE ex_nombre = 'Cubismo');
+SELECT * FROM vw_obras_cubismo;
+
+-- Punto 3 --
+DROP VIEW IF EXISTS vw_expos_con_esculturas;
+CREATE VIEW  vw_expos_con_esculturas AS
+	(SELECT DISTINCT ex_nombre FROM exposicion
+	INNER JOIN obra ON ex_id = ob_ex_id
+    WHERE ob_tipo = 'escultura');
+SELECT * FROM vw_expos_con_esculturas;
+
+-- Punto 4 --
+DROP  VIEW IF EXISTS vw_costo_total_exposicion;
+CREATE VIEW vw_costo_total_exposicion AS 
+	(SELECT ex_nombre, SUM(ob_costo) AS 'costo_total'
+	FROM exposicion JOIN obra ON(obra.ob_ex_id=exposicion.ex_id)
+	GROUP BY exposicion.ex_nombre);
+SELECT * FROM vw_costo_total_exposicion;
+
+-- Punto 5 --
+DROP VIEW IF EXISTS vw_esposicon_con_costo_superor_a_1500;
+CREATE VIEW vw_esposicon_con_costo_superor_a_1500 AS 
+	(SELECT ex_nombre FROM vw_costo_total_exposicion WHERE costo_total > 1500);
+SELECT * FROM vw_esposicon_con_costo_superor_a_1500;
+
 -- Punto 6 --
 DROP VIEW IF EXISTS vw_museos_fecha_especifica;
 CREATE VIEW vw_museos_fecha_especifica AS
